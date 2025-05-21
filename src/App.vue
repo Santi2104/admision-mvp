@@ -31,6 +31,7 @@
         <q-route-tab name="appointments" to="/appointments" label="Appointments" icon="event" />
         <q-route-tab name="patients" to="/patients" label="Patients" icon="folder_shared" />
         <q-route-tab name="doctors" to="/doctors" label="Doctors" icon="medical_services" />
+        <q-route-tab name="payments" to="/payments" label="Payments" icon="payments" />
       </q-tabs>
     </q-header>
 

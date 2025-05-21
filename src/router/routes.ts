@@ -2,11 +2,6 @@ import AdmissionDashboard from 'src/pages/AdmissionDashboard.vue';
 import type { RouteRecordRaw } from 'vue-router';
 
 const routes: RouteRecordRaw[] = [
-  // {
-  //   path: '/',
-  //   component: () => import('layouts/MainLayout.vue'),
-  //   children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
-  // },
   {
     path: '/',
     name: 'dashboard',
@@ -32,9 +27,11 @@ const routes: RouteRecordRaw[] = [
     name: 'doctors',
     component: () => import('../pages/DoctorManagement.vue'),
   },
-
-  // Always leave this as last one,
-  // but you can also remove it
+  {
+    path: '/payments',
+    name: 'payments',
+    component: () => import('../pages/PaymentModule.vue'),
+  },
   {
     path: '/:catchAll(.*)*',
     component: () => import('pages/ErrorNotFound.vue'),
