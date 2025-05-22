@@ -11,13 +11,7 @@
       <!-- Payment Processing Section -->
       <div class="col-12 col-md-8">
         <q-card>
-          <q-tabs
-            v-model="paymentTab"
-            class="text-primary"
-            align="justify"
-            narrow-indicator
-            dense
-          >
+          <q-tabs v-model="paymentTab" class="text-primary" align="justify" narrow-indicator dense>
             <q-tab name="appointment" label="Appointment Payment" icon="event_available" />
             <q-tab name="consultation" label="Consultation Payment" icon="medical_services" />
           </q-tabs>
@@ -50,9 +44,7 @@
                             </q-item-label>
                           </q-item-section>
                           <q-item-section side>
-                            <q-badge color="primary">
-                              ${{ scope.opt.appointmentCost }}
-                            </q-badge>
+                            <q-badge color="primary"> ${{ scope.opt.appointmentCost }} </q-badge>
                           </q-item-section>
                         </q-item>
                       </template>
@@ -234,13 +226,14 @@
               <q-item v-for="payment in recentPayments" :key="payment.id">
                 <q-item-section>
                   <q-item-label>{{ payment.patientName }}</q-item-label>
-                  <q-item-label caption>
-                    {{ payment.date }} • {{ payment.method }}
-                  </q-item-label>
+                  <q-item-label caption> {{ payment.date }} • {{ payment.method }} </q-item-label>
                 </q-item-section>
                 <q-item-section side>
                   <div class="text-weight-medium">${{ payment.amount }}</div>
-                  <q-badge :color="payment.type === 'Appointment' ? 'primary' : 'secondary'" outline>
+                  <q-badge
+                    :color="payment.type === 'Appointment' ? 'primary' : 'secondary'"
+                    outline
+                  >
                     {{ payment.type }}
                   </q-badge>
                 </q-item-section>
@@ -319,12 +312,40 @@
 import { ref } from 'vue';
 import { useQuasar } from 'quasar';
 
+// Define interfaces
+interface Patient {
+  id: string;
+  name: string;
+  appointmentTime?: string;
+  doctor?: string;
+  appointmentCost?: number;
+  waitTime?: number;
+  isUrgent?: boolean;
+  consultationCost?: number;
+}
+
+interface PaymentReceipt {
+  id: string;
+  patientName: string;
+  amount: number;
+  date: string;
+  method: string;
+  type: 'Appointment' | 'Consultation';
+}
+
+interface PaymentForm {
+  patient: Patient | null;
+  amount: number | null;
+  method: string | null;
+  notes: string;
+}
+
 const $q = useQuasar();
 const paymentTab = ref('appointment');
 const receiptDialog = ref(false);
 
 // Sample data
-const scheduledPatients = [
+const scheduledPatients: Patient[] = [
   {
     id: 'P1001',
     name: 'John Doe',
@@ -341,7 +362,7 @@ const scheduledPatients = [
   },
 ];
 
-const waitingPatients = [
+const waitingPatients: Patient[] = [
   {
     id: 'P1003',
     name: 'Robert Smith',
@@ -358,7 +379,7 @@ const waitingPatients = [
   },
 ];
 
-const paymentMethods = ['Cash', 'Credit Card', 'Debit Card', 'Insurance'];
+const paymentMethods: string[] = ['Cash', 'Credit Card', 'Debit Card', 'Insurance'];
 
 const todayStats = ref({
   totalPayments: 15,
@@ -369,7 +390,7 @@ const todayStats = ref({
   consultationAmount: 750,
 });
 
-const recentPayments = ref([
+const recentPayments = ref<PaymentReceipt[]>([
   {
     id: 'PMT001',
     patientName: 'John Doe',
@@ -396,27 +417,36 @@ const recentPayments = ref([
   },
 ]);
 
-const appointmentPayment = ref({
+const appointmentPayment = ref<PaymentForm>({
   patient: null,
   amount: null,
   method: null,
   notes: '',
 });
 
-const consultationPayment = ref({
+const consultationPayment = ref<PaymentForm>({
   patient: null,
   amount: null,
   method: null,
   notes: '',
 });
 
-const currentReceipt = ref(null);
+// Aplicando la interfaz a currentReceipt
+const currentReceipt = ref<PaymentReceipt | null>(null);
 
 const processPayment = () => {
-  // Here you would process the payment and update the database
-  const receipt = {
+  if (
+    !appointmentPayment.value.patient ||
+    !appointmentPayment.value.amount ||
+    !appointmentPayment.value.method
+  ) {
+    return;
+  }
+
+  // Create receipt with proper typing
+  const receipt: PaymentReceipt = {
     id: `PMT${Math.floor(Math.random() * 1000)}`,
-    patientName: appointmentPayment.value.patient?.name,
+    patientName: appointmentPayment.value.patient.name,
     amount: appointmentPayment.value.amount,
     date: new Date().toLocaleTimeString(),
     method: appointmentPayment.value.method,
@@ -451,10 +481,18 @@ const processPayment = () => {
 };
 
 const processConsultationPayment = () => {
-  // Here you would process the consultation payment
-  const receipt = {
+  if (
+    !consultationPayment.value.patient ||
+    !consultationPayment.value.amount ||
+    !consultationPayment.value.method
+  ) {
+    return;
+  }
+
+  // Create receipt with proper typing
+  const receipt: PaymentReceipt = {
     id: `PMT${Math.floor(Math.random() * 1000)}`,
-    patientName: consultationPayment.value.patient?.name,
+    patientName: consultationPayment.value.patient.name,
     amount: consultationPayment.value.amount,
     date: new Date().toLocaleTimeString(),
     method: consultationPayment.value.method,
